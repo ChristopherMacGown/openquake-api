@@ -1,0 +1,10 @@
+*.pyc
+*.DS_Store
+docs/build/**/*
+build
+dist
+.metadata/
+build/**/*
+build-stamp
+dist/**/*
+coverage.ec

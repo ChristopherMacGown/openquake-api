@@ -10,4 +10,5 @@ Mapper.connect('/jobs/:job_name/results', controller='job', action='view',
 Mapper.connect('/jobs/:job_name/update', controller='job', action='update',
                requirements={"job_name":"\w{1,32}"})
 Mapper.connect('/jobs/:job_name/:revision', controller='job', action='view',
-               requirements={"job_name":"\w{1,32}",})
+               requirements={"job_name":"\w{1,32}",
+                             "revision":"master|[a-fA-F0-9]{1,40}"})

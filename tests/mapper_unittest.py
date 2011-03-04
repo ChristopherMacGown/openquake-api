@@ -37,10 +37,8 @@ class MapperTestCase(utils.TestHelper):
     
     def test_non_existent_routes_return_none(self):
         self.assertFalse(mapper.Mapper.match('/jerbs'))
-        self.assertFalse(mapper.Mapper.match('/jerbs/fake_job/'))
-        self.assertFalse(mapper.Mapper.match('/jerbs/fake_job/results'))
-        self.assertFalse(mapper.Mapper.match('/jerbs/fake_job/update'))
-        self.assertFalse(mapper.Mapper.match('/jerbs/fake_job/master'))
-        self.assertFalse(mapper.Mapper.match('/jerbs/fake_job/mazter'))
-        self.assertFalse(mapper.Mapper.match('/jerbs/fake_job/cfa9b9f2b15e129'))
-
+        self.assertFalse(mapper.Mapper.match('/jobs/fake_job/foook'))
+        self.assertFalse(mapper.Mapper.match('/jobs//'))
+        self.assertFalse(mapper.Mapper.match('/jobs/fake_job//'))
+        self.assertFalse(mapper.Mapper.match('/jobs/fake_job/'
+            "00000000000000000000000000000000000000000000000000"))
