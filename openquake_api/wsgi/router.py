@@ -17,37 +17,47 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
+"""
+    The Router middleware takes an incoming request and dispatches it to the
+    appropriate controller based on its path.
+"""
 
 import webob.exc
 
-import openquake_api.mapper
-import openquake_api.wsgi.middleware
+from openquake_api import mapper
+from openquake_api.wsgi import controller
+from openquake_api.wsgi import middleware
 
 
-def dispatch_controller(controller, request):
+def dispatch_controller(cname, request):
     """
     Given a controller name, load the wsgi APP for that name and dispatch the
     request to that wsgi app.
     """
-    print controller
-    print request
+
+    try:
+        cont = [cls() for cls
+                      in controller.Controller.__subclasses__()
+                      if cls.fully_qualified_name() == cname][0]
+        return cont(request)
+    except IndexError:
+        raise webob.exc.HTTPServerError("Could not find class for %s" % cname)
 
 
-class Router(openquake_api.wsgi.middleware.Middleware):
+class Router(middleware.Middleware):
     """
     Route the incoming request to the appropriate App based on its path.
     """
-    
-    def __init__(self, app, mapper=openquake_api.mapper.Mapper):
-        super(Router, self).__init__(app)
-        self.mapper = mapper
 
+    def __init__(self, app, route_map=mapper.Mapper):
+        super(Router, self).__init__(app)
+        self.route_map = route_map
 
     def _process_request(self, request):
         """
         """
 
-        route = self.mapper.match(request.path)
+        route = self.route_map.match(request.path)
         if not route:
             raise webob.exc.HTTPNotFound()
 

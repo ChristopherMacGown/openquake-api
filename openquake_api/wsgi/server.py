@@ -17,6 +17,10 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
+"""
+This module will contain the Server class to create a WSGI server listener.
+"""
 
-class Server():
+class Server(object):
+    """ Server """
     pass

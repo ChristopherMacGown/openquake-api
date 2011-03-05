@@ -18,7 +18,27 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 """
-The OpenQuake API is a RESTful API for the OpenQuake hazard and risk
-calculation platform. It is a project of the Global Earthquake Model
-Foundation.
+Base Controller class.
 """
+
+import webob.dec
+
+
+class Controller(object):
+    """
+    This a base controller class.
+    """
+
+    @webob.dec.wsgify
+    def __call__(self, request):
+        pass
+
+    @classmethod
+    def fully_qualified_name(cls):
+        """
+        Return the fully qualified name of the class. This is used for
+        sub-classes of Controller so we can have a job.Controller and a
+        hazard.Controller and be able to route to them without their
+        stomping on each other in the route mapper.
+        """
+        return "%s.%s" % (cls.__module__, cls.__name__)

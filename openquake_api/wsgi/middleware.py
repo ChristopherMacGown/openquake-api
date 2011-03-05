@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
 # vim: tabstop=4 shiftwidth=4 softtabstop=4
-# 
+#
 # Copyright © 2011, GEM Foundation.
 #
 # This program is free software: you can redistribute it and/or modify
@@ -17,6 +17,9 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
+"""
+Base Controller class.
+"""
 
 import webob.dec
 
@@ -31,12 +34,12 @@ class Middleware(object):
 
     def _process_request(self, req):
         """
-        Classes that inherit from this Middleware class will override this 
+        Classes that inherit from this Middleware class will override this
         method to provide their functionality.
         """
         pass
 
-    def _process_response(self, res):
+    def _process_response(self, res):  # pylint: disable=R0201
         """
         Classes that inherit from this Middleware class will override this
         method if they wish to render their responses differently from how the
