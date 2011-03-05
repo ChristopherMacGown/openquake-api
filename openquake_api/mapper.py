@@ -6,7 +6,7 @@ import routes
 
 
 Mapper = routes.Mapper()  # pylint: disable=C0103
-Mapper.connect('jobs', '/jobs', controller='job', action='list')
+Mapper.connect('jobs', '/jobs', controller='job', action='index')
 Mapper.connect('/jobs/:job_name/', controller='job', action='view',
                requirements={"job_name": "\w{1,32}"})
 Mapper.connect('/jobs/:job_name/results', controller='job', action='view',

@@ -17,6 +17,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
+import json
 import routes
 import webob
 import webob.dec
@@ -29,41 +30,49 @@ from tests import utils
 
 
 class FakeController(controller.Controller):
-    @webob.dec.wsgify
-    def __call__(self, req):
+    def index(self, req):
         return req
 
 
 class RouterTestCase(utils.TestHelper):
+    def setUp(self):
+        self.fake_req = webob.Request.blank("/fake_request")
+
     def test_dispatch_route_dispatches_request_to_controller(self):
-        self.assertEqual("fake_request",
-                         router.dispatch_controller(
-                            "tests.router_unittest.FakeController",
-                            "fake_request"))
+        self.fake_req.environ['routing_args'] = {
+            'action': "index",
+            'controller': "tests.router_unittest.FakeController"}
+        self.assertEqual(
+            json.dumps(self.fake_req.environ['routing_args']),
+            router.dispatch_controller(self.fake_req))
 
     def test_dispatch_route_raises_if_no_such_controller_exists(self):
+        self.fake_req.environ['routing_args'] = {
+            'action': "index",
+            'controller': "doesnt.exist"}
         self.assertRaises(webob.exc.HTTPServerError,
                           router.dispatch_controller,
-                          "tests.router_unittest.ThisControllerDoesn'tExist",
-                          "fake_request")
+                          self.fake_req)
 
     def test_router_properly_dispatches_on_receiving_a_mapped_path(self):
         router.dispatch_controller = utils.WasCalled(router.dispatch_controller)
         req = webob.Request.blank("/fake_route")
         mapper = routes.Mapper()
         mapper.connect('fake_route', '/fake_route', 
-                       controller="tests.router_unittest.FakeController")
+                       controller="tests.router_unittest.FakeController",
+                       action="index")
 
-        r = router.Router("fake_app", mapper=mapper)
+        r = router.Router("fake_route", route_map=mapper)
         self.assertCalled(r._process_request, (router.dispatch_controller,),
                           req)
 
     def test_router_raises_404_on_receiving_unmapped_path(self):
         req = webob.Request.blank("/fake_route_doesn't_exist")
+
         mapper = routes.Mapper()
         mapper.connect('fake_route', '/fake_route', 
                        controller="tests.router_unittest.FakeController")
 
-        r = router.Router("fake_app", mapper=mapper)
+        r = router.Router("fake_app", route_map=mapper)
         self.assertRaises(webob.exc.HTTPNotFound,
                           r._process_request, req)

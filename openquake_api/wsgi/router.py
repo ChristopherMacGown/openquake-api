@@ -29,13 +29,14 @@ from openquake_api.wsgi import controller
 from openquake_api.wsgi import middleware
 
 
-def dispatch_controller(cname, request):
+def dispatch_controller(request):
     """
     Given a controller name, load the wsgi APP for that name and dispatch the
     request to that wsgi app.
     """
 
     try:
+        cname = request.environ['routing_args']['controller']
         cont = [cls() for cls
                       in controller.Controller.__subclasses__()
                       if cls.fully_qualified_name() == cname][0]
@@ -60,5 +61,6 @@ class Router(middleware.Middleware):
         route = self.route_map.match(request.path)
         if not route:
             raise webob.exc.HTTPNotFound()
+        request.environ['routing_args'] = route
 
-        return dispatch_controller(route['controller'], request)
+        return dispatch_controller(request)

@@ -21,7 +21,17 @@
 Base Controller class.
 """
 
+import json
 import webob.dec
+import webob.exc
+
+
+def _get_serializer(serialize_format):
+    """ Return a serializer for the requested format """
+    serializers = {
+            "json": json.dumps
+            }
+    return serializers[serialize_format]
 
 
 class Controller(object):
@@ -31,7 +41,23 @@ class Controller(object):
 
     @webob.dec.wsgify
     def __call__(self, request):
-        pass
+        try:
+            routing_args = request.environ['routing_args']
+            action = getattr(self, routing_args['action'])
+            serialize_format = routing_args.get('format')
+
+            result = action(request.environ['routing_args'])
+            if isinstance(result, dict):
+                if serialize_format:
+                    return self._serialize(result, serialize_format)
+                return self._serialize(result)
+            else:
+                return result
+        except KeyError:
+            raise webob.exc.HTTPServerError("Invalid Request")
+
+    def _serialize(self, result, serialize_format="json"):
+        return _get_serializer(serialize_format)(result)
 
     @classmethod
     def fully_qualified_name(cls):
