@@ -1,0 +1,69 @@
+- fields: {compiler: 1, completeness: 4, contributer: GEM Faulted Earth, created_at: !!timestamp '2010-12-14
+      21:12:33.714113', last_updated: !!timestamp '2010-12-14 21:59:07.163103', name: Bob's
+      Fault, notes: '', verified_by: null}
+  model: faults.fault
+  pk: 3
+- fields: {compiler: 1, completeness: 4, contributer: GEM Faulted Earth, created_at: !!timestamp '2010-12-15
+      20:46:15.023269', last_updated: !!timestamp '2010-12-15 20:46:15.023335', name: foo,
+    notes: '', verified_by: null}
+  model: faults.fault
+  pk: 4
+- fields: {compiler: 1, completeness: 4, contributer: Foo, created_at: !!timestamp '2010-12-14
+      21:09:40.284013', last_updated: !!timestamp '2010-12-15 21:18:34.732949', name: Unverified
+      Fault, notes: '', verified_by: null}
+  model: faults.fault
+  pk: 2
+- fields: {compiler: 1, completeness: 4, contributer: Foo, created_at: !!timestamp '2010-12-13
+      22:17:25.148668', last_updated: !!timestamp '2010-12-15 22:08:28.236981', name: San
+      Andreas, notes: '', verified_by: 1}
+  model: faults.fault
+  pk: 1
+- fields: {fault: 1, geometry: POINT (0.3254699706901300 6.6884771734567998)}
+  model: faults.observation
+  pk: 1
+- fields: {fault: 1, geometry: POINT (15.8203124993680007 3.5134210454999000)}
+  model: faults.observation
+  pk: 2
+- fields: {accuracy: '0.10', aseismic_slip_factor: '0.00', dip_angle: null, downthrown_side: E,
+    expression: 1, fault: 4, geometry: 'LINESTRING (-11.6455078120349995 7.4931964698246993,
+      -9.9975585933506999 7.3842578280159996, -8.6132812496561009 8.4071681632677997,
+      -7.2619628903350000 10.5094167004309984, -4.6801757810630997 10.1851874088669998,
+      -3.4771728514236000 10.3041103279230004, -2.6257324217700999 9.0370028981113002,
+      -0.5712890624771900 10.3149192854060008, 1.9445800780474001 11.1137272817350006,
+      4.4604492185718998 10.9627642559539993, 5.4382324216578999 9.6873984303775007,
+      6.1907958981903004 8.7439362197376997, 7.4707031247016999 8.4071681632677997)',
+    is_active: true, is_episodic: true, lower_depth: null, method: 5, notes: Second
+      section, rake_angle: null, slip_rate: 3, slip_type: 3, strike_angle: null, upper_depth: null}
+  model: faults.faultsection
+  pk: 5
+- fields: {accuracy: '0.10', aseismic_slip_factor: '0.00', dip_angle: null, downthrown_side: E,
+    expression: 1, fault: 1, geometry: 'LINESTRING (17.2480468760270007 -70.2972140574560029,
+      21.4228515633610002 -70.4006627120619868, 24.8945312507229985 -70.4742349384579967,
+      28.2124023443399992 -70.1783449925739973, 32.3212890629259988 -69.8478964222669987,
+      33.7440185550570035 -69.6348684226019969, 33.5847167972509979 -69.2335126263020015,
+      33.4418945316310001 -68.5370230426990048, 34.7053222659559992 -68.8880086461570045,
+      37.1827392580440019 -69.6501559637989942, 38.8691406251650022 -69.9385389779239972,
+      39.8359375001260005 -69.0142768348050026, 42.8242187500069917 -68.0822699877020057,
+      46.6914062498520011 -67.3829345032229838, 48.8886718747650022 -67.3491104406910068)',
+    is_active: true, is_episodic: true, lower_depth: null, method: 5, notes: Need
+      notes., rake_angle: null, slip_rate: 3, slip_type: 3, strike_angle: null, upper_depth: null}
+  model: faults.faultsection
+  pk: 4
+- fields: {accuracy: '0.10', aseismic_slip_factor: '0.00', dip_angle: '90.20', downthrown_side: N,
+    expression: 1, fault: 2, geometry: 'LINESTRING (9.0742187513532002 -71.1245404717909935,
+      14.3476562511429986 -73.4352711249349994, 21.5546875008549996 -71.3787785863689805,
+      27.0917968756339960 -70.8957457794119961, 32.6289062504130030 -71.0390534531090054,
+      36.6718750002509992 -73.6221694530530044, 40.7148437500899973 -71.2661941165520005,
+      44.2304687499499991 -70.7948105811060060, 45.6367187498929994 -69.8327512151559944,
+      51.7890624996479971 -69.1241696781819996)', is_active: true, is_episodic: true,
+    lower_depth: '12.20', method: 5, notes: another foo., rake_angle: '181.50', slip_rate: 3,
+    slip_type: 3, strike_angle: '-14.50', upper_depth: '10.20'}
+  model: faults.faultsection
+  pk: 6
+- fields: {dip_slip_ratio: null, earthquake: null, interval: 5, marker_age: null,
+    scaling: null, section: 6}
+  model: faults.recurrence
+  pk: 2
+- fields: {category: 5, historical_eq: null, prehistorical_eq: null, section: 6}
+  model: faults.event
+  pk: 2
