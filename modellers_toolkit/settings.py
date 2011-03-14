@@ -10,7 +10,6 @@ TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
     # ('Your Name', 'your_email@domain.com'),
-    ('Christopher MacGown', 'chris@openquake.org'),
 )
 
 MANAGERS = ADMINS
@@ -31,6 +30,7 @@ DATABASES = {
 GOOGLE_API_KEY = 'ABQIAAAAUmKamSWZRmEhhP1zT_-NmRRq0gCy63DKMlRvFU2-Hbvb8HpD9RSfIqFkOwQ1UzDtj94EFdKXaSoaqQ'
 
 GIS_DATA_DIR = os.path.join(CURRENT_DIR, '../media/gis')
+BASE_REPO_PATH = os.path.join(CURRENT_DIR, '../repos')
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -101,13 +101,13 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.sites',
     'django.contrib.messages',
+    'django.contrib.admin',
     'south',
     'olwidget',
     'faults',
-    'openquake',
+    'openquake_mt',
     'api',
     # Uncomment the next line to enable the admin:
-    # 'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
 )

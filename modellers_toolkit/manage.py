@@ -1,4 +1,13 @@
 #!/usr/bin/env python
+
+import os
+import eventlet
+import eventlet.debug
+
+os.environ["EVENTLET_NOPATCH"] = 'True'
+eventlet.monkey_patch()
+#eventlet.debug.hub_prevent_multiple_readers(False)
+
 from django.core.management import execute_manager
 try:
     import settings # Assumed to be in the same directory.
