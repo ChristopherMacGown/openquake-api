@@ -9,6 +9,14 @@ import time
 from django import db
 from django.core import exceptions
 
+# ONLY TO FIX THE LACK OF MIXINS
+# HACKHACKHACK
+# TODO(chris): Get this out of here, put it in a good spot in openquake.
+from openquake.hazard import job as hazjob
+from openquake.hazard import opensha
+from openquake.risk import job as riskjob
+from openquake.risk.job import probabilistic
+
 from modellers_toolkit import logs
 from modellers_toolkit import scheduler
 from modellers_toolkit import settings
@@ -91,7 +99,10 @@ class Job(db.models.Model):
         job = openquake.job.Job.from_file(config_file)
         self.job_hash = job.job_id
         self.status = 'running'
-        print self.status
-        print self.job_hash
         self.save()
-        job.launch()
+        try:
+            job.launch()
+        except Exception:
+            self.status = 'new'
+            self.save
+
