@@ -3,11 +3,10 @@ import git
 import openquake
 import openquake.job
 import os
-import re
 import time
+import shutil
 
 from django import db
-from django.core import exceptions
 
 # ONLY TO FIX THE LACK OF MIXINS
 # HACKHACKHACK
@@ -16,29 +15,53 @@ from openquake.hazard import job as hazjob
 from openquake.hazard import opensha
 from openquake.risk import job as riskjob
 from openquake.risk.job import probabilistic
+#
+# END HACK
+#
 
 from modellers_toolkit import logs
 from modellers_toolkit import scheduler
 from modellers_toolkit import settings
 from modellers_toolkit import utils
+from modellers_toolkit.openquake_mt import validators
 
 
-GIT_URL_RE = re.compile("^.*\.git$")
-STATUSES = (
-    ('complete', 'Complete'),
-    ('new', 'New'),
-    ('running', 'Running'),
-)
-
-
-def validate_git_url(url):
-    # stupid, use gitpython
-    if not GIT_URL_RE.match(url):
-        raise exceptions.ValidationError("Must be the URL of a git repo.")
-
+NO_SPAWN_STATUSES = ['error', 'running']
 
 def handle_job(gt, *args, **kwargs):
     return gt.wait()
+
+
+class Model(db.models.Model):
+    class Meta:
+        app_label = "openquake"
+
+    name = db.models.CharField(max_length=255,
+                               null=False,
+                               unique=True)
+    model_type = db.models.CharField(max_length=10,
+                                     choices=validators.MODEL_TYPES,
+                                     validators=[validators.validate_model_type,],
+                                     editable=True)
+    model_blob = db.models.TextField(verbose_name="NRML Model",
+                                     validators=[validators.validate_nrml,],)
+    created_at = db.models.DateTimeField(auto_now_add=True)
+    updated_at = db.models.DateTimeField(auto_now=True)
+
+    def __unicode__(self):
+        return self.name
+
+
+    def save(self):
+        super(Model, self).save() # Save the object to the db.
+        
+        # write the model to a file on disk.
+        with open("/tmp/%s-model" % model_type, "w") as model:
+            model.write(model_blob)
+
+        # Then update the RuiUI Job.
+
+
 
 class Job(db.models.Model):
     """ An instance of an openquake Job. """
@@ -50,15 +73,15 @@ class Job(db.models.Model):
     created_at = db.models.DateTimeField(auto_now_add=True)
     updated_at = db.models.DateTimeField(auto_now=True)
     status = db.models.CharField(max_length=10, 
-                                 choices=STATUSES,
+                                 choices=validators.STATUSES,
                                  editable=False,
                                  default='new')
     name = db.models.CharField(max_length=40, unique=True)
     job_hash = db.models.CharField(max_length=40, 
                                    editable=False)
-    repo = db.models.URLField(validators=[validate_git_url,], 
-                              verify_exists=False,
-                              verbose_name="git repository")
+    repo = db.models.CharField(max_length=255,
+                               validators=[validators.validate_git_url,], 
+                               verbose_name="git repository")
 
     def __unicode__(self):
         return self.name
@@ -72,15 +95,21 @@ class Job(db.models.Model):
         return utils.repo_dir(self.repo_name)
 
     def save(self):
-        # download the repo.
-        self.__clone_repo()
-
         # actually save.
         super(Job, self).save()
 
-        # Then spawn a job.
-        if self.status == 'new':
-            self.job = scheduler.schedule(self.__spawn_job)
+        # Spawn IT!
+        if not self.status in NO_SPAWN_STATUSES:
+            # download the repo.
+            self.__clone_repo()
+            self.__spawn_job()
+
+
+    def delete(self):
+        try:
+            super(Job, self).delete()
+        finally:
+            shutil.rmtree(self.repo_dir)
 
     def __clone_repo(self):
         try:
@@ -94,15 +123,16 @@ class Job(db.models.Model):
             remote.pull()
 
     def __spawn_job(self):
-        eventlet.sleep(0)
+        # TODO(chris): Move me into the daemonized job runner.
         config_file = os.path.join(self.repo_dir, 'config.gem')
         job = openquake.job.Job.from_file(config_file)
         self.job_hash = job.job_id
         self.status = 'running'
         self.save()
         try:
-            job.launch()
-        except Exception:
-            self.status = 'new'
-            self.save
+            return job.launch()
+        except Exception, e:
+            self.status = "error"
+            self.save()
+            return False
 
